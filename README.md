@@ -16,10 +16,12 @@ Place the stratninja.py file into your strategies directory where you will run y
 
 Inside your strategy add the stratninja import on top of the file
 
+```python
 import stratninja
-
+```
 Add the following function to your strategy AND insert your token into YOURSECRETTOKEN:
 
+```python
     def bot_loop_start(self, **kwargs) -> None:
         """
         Called at the start of the bot iteration (one loop).
@@ -28,7 +30,7 @@ Add the following function to your strategy AND insert your token into YOURSECRE
         :param **kwargs: Ensure to keep this here so updates to this won't break your strategy.
         """
         stratninja.post_stats(self.config, token="YOURSECRETTOKEN")
-
+```
 
 - Restart / Startup your strategy
 
