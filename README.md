@@ -8,6 +8,8 @@ Atleast 1 uploaded Strategy on strat.ninja
 
 Receive the token from the strat.ninja website in Upload->Profile after being logged in with discord.
 
+![s1](https://github.com/Bloodhunter4rc/stratninja/assets/8630485/6606075c-5b1f-494f-b6dc-2988a6d16762)
+
 (Currently it is set that you need to have uploaded atleast 1 strategy for the token to work)
 
 Place the stratninja.py file into your strategies directory where you will run your strategy.
