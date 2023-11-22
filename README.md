@@ -1,25 +1,25 @@
-# stratninja
-Used to post your dryruns to the strat.ninja Website, easy way to keep track of your dryruns.
+# StratNinja
+If you want to effortlessly track your dryruns on the strat.ninja website, here's a simple guide to get you started.
 
 # Prerequisites
-Atleast 1 uploaded Strategy on strat.ninja
+Ensure you have at least one strategy uploaded on strat.ninja.
 
 # How to use?
 
-Receive the token from the strat.ninja website in Upload->Profile after being logged in with discord.
+Obtain your token from the strat.ninja website by navigating to Upload -> Profile after logging in with Discord.
 
 ![s1](https://github.com/Bloodhunter4rc/stratninja/assets/8630485/6606075c-5b1f-494f-b6dc-2988a6d16762)
 
-(Currently it is set that you need to have uploaded atleast 1 strategy for the token to work)
+(Note: Currently, the token requires at least one uploaded strategy to function.)
 
 Place the [stratninja.py](https://github.com/Bloodhunter4rc/stratninja/blob/main/stratninja.py) file into your strategies directory where you will run your strategy.
 
-Inside your strategy add the stratninja import on top of the file
+In your strategy file, add the following import at the top:
 
 ```python
 import stratninja
 ```
-Add the following function to your strategy AND insert your token into YOURSECRETTOKEN:
+Insert the following function into your strategy file, replacing "YOURSECRETTOKEN" with your obtained token:
 
 ```python
     def bot_loop_start(self, **kwargs) -> None:
@@ -34,15 +34,10 @@ Add the following function to your strategy AND insert your token into YOURSECRE
 
 - Restart / Startup your strategy
 
-Your dryrun statistics will be posted to the page at startup of your strategy and after that every 15 minutes if there is a change on closed trades.
-Currently this will only handle closed Trades.
+Your dryrun statistics will be posted on the strat.ninja page at the startup of your strategy and subsequently every 15 minutes if there is a change in closed trades. Please note that currently, only closed trades are considered.
 
-It will be listed on:
-https://strat.ninja/dry.php
-And also in your personal profile on the page.
+Your dryruns will be listed on https://strat.ninja/dry.php and in your personal profile on the page.
 
-You can receive all your dryruns by visiting:
-http://strat.ninja/post.php?token=YOURSECRETTOKEN
+To access all your dryruns, visit http://strat.ninja/post.php?token=YOURSECRETTOKEN.
 
-Limitations:
-Only closed trades are counted.
+Limitations: Only closed trades are counted in the statistics.
