@@ -12,7 +12,7 @@ Receive the token from the strat.ninja website in Upload->Profile after being lo
 
 (Currently it is set that you need to have uploaded atleast 1 strategy for the token to work)
 
-Place the stratninja.py file into your strategies directory where you will run your strategy.
+Place the [stratninja.py](https://github.com/Bloodhunter4rc/stratninja/blob/main/stratninja.py) file into your strategies directory where you will run your strategy.
 
 Inside your strategy add the stratninja import on top of the file
 
