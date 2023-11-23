@@ -35,6 +35,7 @@ Insert the following function into your strategy file, replacing "YOURSECRETTOKE
 - Restart / Startup your strategy
 
 Your dryrun statistics will be posted on the strat.ninja page at the startup of your strategy and subsequently every 15 minutes if there is a change in closed trades. Please note that currently, only closed trades are considered.
+Atleast 2 closed trades are needed before the statistics will be posted.
 
 Your dryruns will be listed on https://strat.ninja/dry.php and in your personal profile on the page.
 
