@@ -35,8 +35,8 @@ Insert the following function into your strategy file, replacing "YOURSECRETTOKE
         stratninja.post_stats(self.config, token="YOURSECRETTOKEN")
 ```
 
-```
 Additional to the token stratninja.post_stats accepts the following optional Arguments:
+```
           private=("True"/"False") want to hide your dryruns on the page -> True
           strat("") = want to link your dryrun to a backtested strategy input the name of the strategy from the page here
           alternate_name("") = want a special display name set it here
