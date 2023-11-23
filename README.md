@@ -49,7 +49,7 @@ Atleast 2 closed trades are needed before the statistics will be posted.
 
 Your dryruns will be listed on https://strat.ninja/strats.php?tab=2 and in your personal profile on the page.
 
-To access the data all your dryruns, visit http://strat.ninja/post.php?token=YOURSECRETTOKEN.
+To access the data of all your dryruns, visit http://strat.ninja/post.php?token=YOURSECRETTOKEN.
 or http://strat.ninja/post.php?user=username (wont include private strat)
 
 output looks like this:
