@@ -20,12 +20,13 @@ def calculate_average(lst):
     average = total / len(lst)
     return average
 
-def post_stats(config, token="", private="False", strat=""):
+def post_stats(config, token="", private="False", strat="", alternate_name=""):
    """
    args:
           token = your token from strat.ninja/upload on your profile page.
           private = want to hide your dryruns on the page -> True
           strat = want to link your dryrun to a backtested strategy
+          alternate_name = want a special display name set it here
           provide the name of the strategy here
    """
    global custom_info
@@ -258,7 +259,8 @@ def post_stats(config, token="", private="False", strat=""):
       "trading_mode": str(config.get('trading_mode', "spot")),
       "uptime_d": str(dayspassed),
       "private": private,
-      "strat": strat
+      "strat": strat,
+      "alternate_name": alternate_name
     }
 
    if not firstrun:
