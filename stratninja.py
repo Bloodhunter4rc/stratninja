@@ -279,7 +279,11 @@ def post_stats(config, token="", private="False", strat=""):
    }
 
    # Send the POST request
-   response = requests.post(php_url, data=json_data_to_send, headers=headers)
+   try:
+      response = requests.post(php_url, data=json_data_to_send, headers=headers)
+   except Exception as e:
+      logger.info("Error - StratNinja - Unable to Post Statistics! - " + str(e) )
+      return False
 
    end_time = time.time()  # Record the end time
    elapsed_time = round(end_time - start_time,2)  # Calculate the elapsed time
