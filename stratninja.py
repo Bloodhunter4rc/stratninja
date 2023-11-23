@@ -84,6 +84,11 @@ def post_stats(config, token="", private="False", strat=""):
    dry_run_wallet = config.get('dry_run_wallet', "1000")
    final_balance = dry_run_wallet
 
+   if len(json_data_lines) <= 1:
+      total_trades = 0
+      logger.info("Skip Update - StratNinja - Less than 2 Trades.")
+      return False
+
    for xx in json_data_lines:
       json_data = json.loads(xx)
       pair = json_data["pair"]
@@ -141,7 +146,7 @@ def post_stats(config, token="", private="False", strat=""):
    current_total_trades = int(wins) + int(losses)
 
    if current_total_trades == total_trades:
-      logger.info("No Update since last check. Skipping.")
+      logger.info("Skip Update - StratNinja - No more Trades since last update.")
       return False
    else:
       total_trades = current_total_trades
@@ -165,18 +170,45 @@ def post_stats(config, token="", private="False", strat=""):
 
    avg_trade_duration = str(timedelta(seconds=sum(trade_duration_list) / num)).split('.')[0]
 
-   expectancy,expectancy_ratio = calculate_expectancy(tradesx)
-   (max_drawdown_abs, drawdown_start, drawdown_end, dd_high_val, dd_low_val, max_drawdown) = calculate_max_drawdown(tradesx)
+   try:
+      expectancy,expectancy_ratio = calculate_expectancy(tradesx)
+   except TypeError as e:
+      expectancy, expectancy_ratio = 0, 0
+
+   try:
+      (max_drawdown_abs, drawdown_start, drawdown_end, dd_high_val, dd_low_val, max_drawdown) = calculate_max_drawdown(tradesx)
+   except:
+      max_drawdown_abs = 0
+      drawdown_start = 0
+      drawdown_end = 0
+      dd_high_val = 0
+      dd_low_val = 0
+      max_drawdown = 0
 
    min_date = datetime.utcfromtimestamp(first_trade_timestamp / 1000.0)
    max_date = datetime.utcfromtimestamp(latest_timestamp / 1000.0)
 
-   sortino_ratio = calculate_sortino(tradesx, min_date, max_date, dry_run_wallet)
-   sharpe_ratio = calculate_sharpe(tradesx, min_date, max_date, dry_run_wallet)
-   calmar_ratio = calculate_calmar(tradesx, min_date, max_date, dry_run_wallet)
+   try:
+      sortino_ratio = calculate_sortino(tradesx, min_date, max_date, dry_run_wallet)
+   except TypeError as e:
+      sortino_ratio = 0
+
+   try:
+      sharpe_ratio = calculate_sharpe(tradesx, min_date, max_date, dry_run_wallet)
+   except TypeError as e:
+      sharpe_ratio = 0
+
+   try:
+      calmar_ratio = calculate_calmar(tradesx, min_date, max_date, dry_run_wallet)
+   except TypeError as e:
+      calmar_ratio = 0
 
    dayspassed = (max_date - min_date).days
-   cagr = calculate_cagr(dayspassed, dry_run_wallet, final_balance)
+
+   if dayspassed:
+      cagr = calculate_cagr(dayspassed, dry_run_wallet, final_balance)
+   else:
+      cagr = 0
 
    calmar_ratio = str(calmar_ratio)
 
