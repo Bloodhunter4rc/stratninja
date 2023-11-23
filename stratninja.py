@@ -25,9 +25,8 @@ def post_stats(config, token="", private="False", strat="", alternate_name=""):
    args:
           token = your token from strat.ninja/upload on your profile page.
           private = want to hide your dryruns on the page -> True
-          strat = want to link your dryrun to a backtested strategy
+          strat = want to link your dryrun to a backtested strategy, provide the name of the strategy here
           alternate_name = want a special display name set it here
-          provide the name of the strategy here
    """
    global custom_info
    global total_trades
