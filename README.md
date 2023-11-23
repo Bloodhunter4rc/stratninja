@@ -46,7 +46,8 @@ To access the data all your dryruns, visit http://strat.ninja/post.php?token=YOU
 or http://strat.ninja/post.php?user=username (wont include private strat)
 
 output looks like this:
-```json[
+```json
+[
     {
         "strategy": "Synthesis_v5_log",
         "bot_name": "freqtrade",
