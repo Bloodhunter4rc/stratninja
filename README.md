@@ -35,6 +35,13 @@ Insert the following function into your strategy file, replacing "YOURSECRETTOKE
         stratninja.post_stats(self.config, token="YOURSECRETTOKEN")
 ```
 
+```
+Additional to the token stratninja.post_stats accepts the following optional Arguments:
+          private=("True"/"False") want to hide your dryruns on the page -> True
+          strat("") = want to link your dryrun to a backtested strategy input the name of the strategy from the page here
+          alternate_name("") = want a special display name set it here
+```
+
 - Restart / Startup your strategy
 
 Your dryrun statistics will be posted on the strat.ninja page at the startup of your strategy and subsequently every 15 minutes if there is a change in closed trades. Please note that currently, only closed trades are considered.
