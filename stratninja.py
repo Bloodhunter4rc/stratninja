@@ -281,7 +281,7 @@ def post_stats(config, token="", private="False", strat="", alternate_name=""):
 
    # Send the POST request
    try:
-      response = requests.post(php_url, data=json_data_to_send, headers=headers)
+      response = requests.post(php_url, data=json_data_to_send, headers=headers, timeout=10)
    except Exception as e:
       logger.info("Error - StratNinja - Unable to Post Statistics! - " + str(e) )
       return False
