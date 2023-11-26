@@ -5,6 +5,7 @@ import logging as logger
 from freqtrade.data.btanalysis import load_trades_from_db
 from freqtrade.data.metrics import calculate_expectancy, calculate_max_drawdown, calculate_sortino, calculate_sharpe, calculate_calmar, calculate_cagr
 import time
+from collections import defaultdict
 
 logger = logger.getLogger()
 
@@ -89,12 +90,43 @@ def post_stats(config, token="", private="False", strat="", alternate_name=""):
       logger.info("Skip Update - StratNinja - Less than 2 Trades.")
       return False
 
+   current_timestamp = int(time.time() * 1000)  # Get the current timestamp
+   close_timestamp = None  # Initialize close_timestamp outside the loop
+   daily_data = defaultdict(lambda: {"p": 0, "t": 0})  # Initialize outside the loop
+   enter_tag_profits = defaultdict(float)
+
+   pair_profit_map = {}
+
    for xx in json_data_lines:
       json_data = json.loads(xx)
       pair = json_data["pair"]
       stake_amount = json_data["stake_amount"]
       profit_abs = json_data["profit_abs"]
       open_timestamp = json_data["open_timestamp"]
+      close_timestamp = json_data.get("close_timestamp")
+      stake_amount = json_data.get("stake_amount")
+      enter_tag = json_data.get("enter_tag")
+
+      if profit_abs is not None:
+          pair_profit_map[pair] = pair_profit_map.get(pair, 0) + float(profit_abs)
+
+      if enter_tag is not None and profit_abs is not None:
+          enter_tag_profits[enter_tag] += float(profit_abs)
+
+      if close_timestamp is not None:
+         close_date = datetime.utcfromtimestamp(close_timestamp / 1000.0)
+
+         if (current_timestamp - close_timestamp) <= (122 * 24 * 60 * 60 * 1000):
+            daily_key = close_date.strftime("%Y-%m-%d")
+
+            if "p" not in daily_data[daily_key]:
+               daily_data[daily_key]["p"] = 0
+               daily_data[daily_key]["t"] = 0
+
+            cum_prof = (profit_abs / stake_amount) * 100
+
+            daily_data[daily_key]["p"] += cum_prof # += profit_abs
+            daily_data[daily_key]["t"] += 1
 
       if (json_data['profit_ratio']):
          profit_mean_list.append(json_data['profit_ratio'])
@@ -142,6 +174,16 @@ def post_stats(config, token="", private="False", strat="", alternate_name=""):
          wins+=1
       else:
          losses+=1
+
+   max_profit_pair = max(pair_profit_map, key=pair_profit_map.get, default=None)
+   max_profit = pair_profit_map.get(max_profit_pair, 0)
+
+   daily_data = dict(daily_data)
+
+   for daily_key in daily_data:
+      daily_data[daily_key]["p"] = "{:.2f}".format(daily_data[daily_key]["p"])
+
+   daily_data_json = json.dumps(daily_data, indent=2)
 
    current_total_trades = int(wins) + int(losses)
 
@@ -212,14 +254,19 @@ def post_stats(config, token="", private="False", strat="", alternate_name=""):
 
    calmar_ratio = str(calmar_ratio)
 
-   # Sample data to be sent in the POST request
+   enter_tag_profits_list = [{"enter_tag": tag, "profit": profit} for tag, profit in enter_tag_profits.items()]
+   enter_tag_profits_json = json.dumps(enter_tag_profits_list)
+
    data_to_send = {
       "strategy": config['strategy'],
       "exchange": config['exchange']['name'],
       "winning_trades": wins,
       "losing_trades": losses,
       "final_balance": str(final_balance),
+      "profit_days": daily_data_json,
+      "tag_profit": enter_tag_profits_json,
       "profit_all_percent_sum": winning_profit,
+      "best_pair": str(max_profit_pair),
       "stake_currency": config['stake_currency'],
       "timeframe": config['timeframe'] if config['timeframe'] else "",
       "stoploss": config.get('stoploss', "0"),
