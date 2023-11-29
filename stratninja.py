@@ -32,6 +32,9 @@ def post_stats(config, token="", private="False", strat="", alternate_name=""):
    global custom_info
    global total_trades
    global firstrun
+   json_data_lines = []
+   tradesx = {}
+   trades = {}
 
    start_time = time.time()  # Record the start time
 
@@ -39,14 +42,34 @@ def post_stats(config, token="", private="False", strat="", alternate_name=""):
       dateTime = datetime.now()
       timeSinceLatestUpdate = dateTime - custom_info['latest_update']
 
-      if timeSinceLatestUpdate > timedelta(minutes=15):
+      if timeSinceLatestUpdate > timedelta(minutes=5):
          tradesx = load_trades_from_db(config['db_url'])
          trades = tradesx.to_json(orient='records', lines=True)
+         json_data_lines = trades.strip().split('\n')
+
+         if len(json_data_lines) <= 1:
+            total_trades = 0
+            logger.info("Skip Update - StratNinja - Less than 2 Trades.")
+            custom_info['latest_update'] = dateTime
+            return False
+
+         current_total_trades = len(json_data_lines)
+
+         if current_total_trades == total_trades:
+            logger.info("Skip Update - StratNinja - No more Trades since last update.")
+            custom_info['latest_update'] = dateTime
+            return False
+         else:
+            total_trades = current_total_trades
+
          custom_info['latest_update'] = dateTime
       else:
          return False
+
    else:
       return False
+
+   custom_info['latest_update'] = dateTime
 
    php_url = "https://strat.ninja/post.php?token=" + str(token)
 
@@ -80,15 +103,8 @@ def post_stats(config, token="", private="False", strat="", alternate_name=""):
    profit_mean = 0
    total_volume = 0
 
-   json_data_lines = trades.strip().split('\n')
-
    dry_run_wallet = config.get('dry_run_wallet', "1000")
    final_balance = dry_run_wallet
-
-   if len(json_data_lines) <= 1:
-      total_trades = 0
-      logger.info("Skip Update - StratNinja - Less than 2 Trades.")
-      return False
 
    current_timestamp = int(time.time() * 1000)  # Get the current timestamp
    close_timestamp = None  # Initialize close_timestamp outside the loop
@@ -184,14 +200,6 @@ def post_stats(config, token="", private="False", strat="", alternate_name=""):
       daily_data[daily_key]["p"] = "{:.2f}".format(daily_data[daily_key]["p"])
 
    daily_data_json = json.dumps(daily_data, indent=2)
-
-   current_total_trades = int(wins) + int(losses)
-
-   if current_total_trades == total_trades:
-      logger.info("Skip Update - StratNinja - No more Trades since last update.")
-      return False
-   else:
-      total_trades = current_total_trades
 
    if profit_mean_list:
       profit_mean = (sum(profit_mean_list) / len(profit_mean_list)) * 100
@@ -310,10 +318,10 @@ def post_stats(config, token="", private="False", strat="", alternate_name=""):
     }
 
    if not firstrun:
-      keys_to_remove = ["strat", "dry_run_wallet", "bot_name", "dry_run", "stake_amount", "max_open_trades", "stoploss", "trailing_stop", "trailing_stop_positive", "trailing_stop_positive", "trailing_only_offset_is_reached", "startup_candle_count", "exit_profit_only"]
+      keys_to_remove = ["strat", "dry_run_wallet", "dry_run", "stake_amount", "max_open_trades", "stoploss", "trailing_stop", "trailing_stop_positive", "trailing_stop_positive", "trailing_only_offset_is_reached", "startup_candle_count", "exit_profit_only"]
       data_to_send = {key: value for key, value in data_to_send.items() if key not in keys_to_remove}
 
-   if data_to_send["trailing_stop"] == "False":
+   if "trailing_stop" in data_to_send and data_to_send["trailing_stop"] == "False":
       keys_to_remove_trailing_stop = ["trailing_stop_positive", "trailing_stop_positive_offset", "trailing_only_offset_is_reached"]
       data_to_send = {key: value for key, value in data_to_send.items() if key not in keys_to_remove_trailing_stop}
 
